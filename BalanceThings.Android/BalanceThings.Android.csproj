@@ -66,6 +66,8 @@
     <Compile Include="Core\Game.cs" />
     <Compile Include="Core\GameState.cs" />
     <Compile Include="Core\SinglePlayerGame.cs" />
+    <Compile Include="Util\ContentManager.cs" />
+    <Compile Include="Util\LoadTask.cs" />
     <Compile Include="Util\Log.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

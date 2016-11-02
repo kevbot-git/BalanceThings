@@ -4,9 +4,8 @@ using Android.Hardware;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
-using BalanceThings.Core;
 
-namespace BalanceThings
+namespace BalanceThings.Core
 {
     [Activity(Label = "Balance Things"
         , MainLauncher = true
@@ -16,7 +15,7 @@ namespace BalanceThings
         , LaunchMode = Android.Content.PM.LaunchMode.SingleInstance
         , ScreenOrientation = ScreenOrientation.Portrait
         , ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.Keyboard | ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize)]
-    public class AndroidActivity : Microsoft.Xna.Framework.AndroidGameActivity, ISensorEventListener
+    internal class AndroidActivity : Microsoft.Xna.Framework.AndroidGameActivity, ISensorEventListener
     {
         private static readonly object _syncLock = new object();
         private SensorManager _sensorManager;

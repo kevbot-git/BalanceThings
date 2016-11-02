@@ -1,4 +1,7 @@
+using System;
+using BalanceThings.Util;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace BalanceThings.Core
 {
@@ -7,14 +10,31 @@ namespace BalanceThings.Core
         public SinglePlayerGame(AccelerometerHandlerDelegate accelerometerHandler)
             : base(accelerometerHandler) { }
 
-        protected override void Initialize()
+        protected override void Init()
         {
-            base.Initialize();
+            //
         }
 
-        protected override void LoadContent()
+        // My alternative to LoadContent; makes progress bars easier
+        protected override ContentManager Load()
         {
-            base.LoadContent();
+            ContentManager c = new ContentManager();
+
+            for (int i = 1; i <= 10; i++)
+            {
+                c.AddTask(new LoadTask("test" + i, delegate ()
+                {
+                    System.Threading.Thread.Sleep(200);
+                }));
+            }
+
+            return c;
+        }
+
+        protected override void OnLoaded()
+        {
+
+            base.OnLoaded();
         }
 
         protected override void Restart()
