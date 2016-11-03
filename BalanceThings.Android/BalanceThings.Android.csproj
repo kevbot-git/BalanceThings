@@ -66,6 +66,12 @@
     <Compile Include="Core\Game.cs" />
     <Compile Include="Core\GameState.cs" />
     <Compile Include="Core\SinglePlayerGame.cs" />
+    <Compile Include="Drawing\AnimatedSprite.cs" />
+    <Compile Include="Drawing\IDrawable.cs" />
+    <Compile Include="Drawing\IUpdatable.cs" />
+    <Compile Include="Drawing\Sprite.cs" />
+    <Compile Include="Items\Hand.cs" />
+    <Compile Include="Physics\GameObject.cs" />
     <Compile Include="Util\ContentManager.cs" />
     <Compile Include="Util\LoadTask.cs" />
     <Compile Include="Util\Log.cs" />

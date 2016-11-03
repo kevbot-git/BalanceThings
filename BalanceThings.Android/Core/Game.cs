@@ -79,7 +79,7 @@ namespace BalanceThings.Core
 
         protected virtual void OnLoaded()
         {
-            _currentGameState = GameState.IN_MAIN_MENU;
+            _currentGameState = GameState.PLAYING;
         }
 
         protected override void UnloadContent()
@@ -125,8 +125,6 @@ namespace BalanceThings.Core
         
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Background);
-
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, null, null, null, null);
 
             switch (_currentGameState)
