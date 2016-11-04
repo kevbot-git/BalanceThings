@@ -5,8 +5,8 @@ namespace BalanceThings.Drawing
 {
     class AnimatedSprite : Sprite
     {
-        internal AnimatedSprite(Texture2D texture, Rectangle? collider, Vector2 position, Point origin, float scale, float rotation)
-            : base(texture, collider, position, origin, scale, rotation) { }
+        internal AnimatedSprite(Texture2D texture, Rectangle? collider, Vector2 position, float scale, float rotation)
+            : base(texture, collider, position, scale, rotation) { }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {

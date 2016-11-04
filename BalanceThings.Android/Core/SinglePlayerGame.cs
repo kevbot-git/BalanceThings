@@ -15,8 +15,6 @@ namespace BalanceThings.Core
 
         private GameObject _hand;
 
-        private Sprite _tempHand;
-
         public SinglePlayerGame(AccelerometerHandlerDelegate accelerometerHandler)
             : base(accelerometerHandler) { }
 
@@ -43,10 +41,7 @@ namespace BalanceThings.Core
                 ConvertUnits.SetDisplayUnitToSimUnitRatio(1f);
                 _world = new World(new Vector2(0, 9.98f));
 
-                _hand = new Hand(_world, Content.Load<Texture2D>("hand_default"), GraphicsDevice.Viewport.Bounds.Center.ToVector2());
-
-                _tempHand = new Sprite(Content.Load<Texture2D>("hand_default"), new Rectangle(6, 1, 2, 6),
-                    GraphicsDevice.Viewport.Bounds.Center.ToVector2(), Point.Zero, 32f, 0f);
+                _hand = new Hand(_world, Content, Vector2.Zero);//GraphicsDevice.Viewport.Bounds.Center.ToVector2());
             }));
 
             return c;
@@ -72,8 +67,6 @@ namespace BalanceThings.Core
 
                     _hand.Update(gameTime);
 
-                    _tempHand.Update(gameTime);
-
                     break;
             }
 
@@ -91,8 +84,6 @@ namespace BalanceThings.Core
                     spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, null, null, null, null);
 
                     _hand.Draw(gameTime, spriteBatch);
-
-                    _tempHand.Draw(gameTime, spriteBatch);
 
                     spriteBatch.End();
 

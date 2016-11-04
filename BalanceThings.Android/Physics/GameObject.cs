@@ -20,7 +20,8 @@ namespace BalanceThings.Physics
         }
 
         internal GameObject(World world, Sprite sprite, float density)
-            : this(world, BodyFactory.CreateRectangle(world, sprite.Collider.Width, sprite.Collider.Width, density, ConvertUnits.ToSimUnits(sprite.Position)), sprite) { }
+            : this(world, BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(sprite.Collider.Width),
+                ConvertUnits.ToSimUnits(sprite.Collider.Height), density, ConvertUnits.ToSimUnits(sprite.Position)), sprite) { }
 
         public void Update(GameTime gameTime)
         {

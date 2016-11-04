@@ -2,14 +2,15 @@ using BalanceThings.Drawing;
 using BalanceThings.Physics;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace BalanceThings.Items
 {
     class Hand : GameObject
     {
-        internal Hand(World world, Texture2D texture, Vector2 position)
-            : base(world, new Sprite(texture, new Rectangle(6, 1, 2, 6), position, new Point(1, 3), 1f, 0f), 32f)
+        internal Hand(World world, ContentManager contentManager, Vector2 position)
+            : base(world, new Sprite(contentManager.Load<Texture2D>("hand_default"), new Rectangle(6, 1, 2, 6), position, 16f, 0f), 1f)
         {
             Body.IsStatic = true;
         }
