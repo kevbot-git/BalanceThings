@@ -6,6 +6,7 @@ using BalanceThings.Physics;
 using BalanceThings.Drawing;
 using BalanceThings.Items;
 using FarseerPhysics;
+using Microsoft.Xna.Framework.Input.Touch;
 
 namespace BalanceThings.Core
 {
@@ -14,6 +15,7 @@ namespace BalanceThings.Core
         private World _world;
 
         private GameObject _hand;
+        private GameObject _baseballBat;
 
         public SinglePlayerGame(AccelerometerHandlerDelegate accelerometerHandler)
             : base(accelerometerHandler) { }
@@ -38,10 +40,16 @@ namespace BalanceThings.Core
 
             c.AddTask(new LoadTask("physics", delegate ()
             {
-                ConvertUnits.SetDisplayUnitToSimUnitRatio(1f);
+                TouchPanel.EnabledGestures = GestureType.Tap | GestureType.FreeDrag | GestureType.DragComplete;
+                ConvertUnits.SetDisplayUnitToSimUnitRatio(10f);
+
                 _world = new World(new Vector2(0, 9.98f));
 
-                _hand = new Hand(_world, Content, Vector2.Zero);//GraphicsDevice.Viewport.Bounds.Center.ToVector2());
+                _hand = new Hand(_world, Content, new Vector2(0, 26));
+                _baseballBat = new BaseballBat(_world, Content, new Vector2(0, -24));
+
+                //Camera = new View.Camera(GraphicsDevice, 1f, GraphicsDevice.Viewport.Bounds.Center.ToVector2());
+                Camera = new View.Camera(GraphicsDevice, 12f, new Vector2(0, 0));
             }));
 
             return c;
@@ -60,12 +68,28 @@ namespace BalanceThings.Core
 
         protected override void Update(GameTime gameTime)
         {
-            switch(_currentGameState)
+            GestureSample? touch = null;
+            if (TouchPanel.IsGestureAvailable)
+                touch = TouchPanel.ReadGesture();
+
+            switch (_currentGameState)
             {
                 case GameState.PLAYING:
                     _world.Step((float) 1 / 60);
 
+                    if (touch != null)
+                    {
+                        if (touch.Value.GestureType == GestureType.Tap)
+                            _baseballBat.Body.LinearVelocity = new Vector2(0f, -5f);
+                        else
+                            _hand.Body.Position = ConvertUnits.ToSimUnits(new Vector2(touch.Value.Position.X / 12 - 32, _hand.Sprite.Position.Y));
+                    }
+
                     _hand.Update(gameTime);
+
+                    _baseballBat.Update(gameTime);
+
+                    //Camera.Follow(_hand);
 
                     break;
             }
@@ -81,9 +105,14 @@ namespace BalanceThings.Core
             {
                 case GameState.PLAYING:
 
-                    spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, null, null, null, null);
+                    Matrix? transform = null;
+                    if (Camera != null)
+                        transform = Camera.Transform;
+
+                    spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, null, null, null, transform);
 
                     _hand.Draw(gameTime, spriteBatch);
+                    _baseballBat.Draw(gameTime, spriteBatch);
 
                     spriteBatch.End();
 

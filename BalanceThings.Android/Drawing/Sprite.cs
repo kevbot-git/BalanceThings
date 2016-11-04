@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace BalanceThings.Drawing
 {
-    class Sprite : IDrawable, IUpdatable
+    class Sprite : IDrawable
     {
         internal Sprite(Texture2D texture, Rectangle? collider, Vector2 position, float scale, float rotation)
         {
@@ -22,11 +22,6 @@ namespace BalanceThings.Drawing
 
         internal Sprite(Texture2D texture, Rectangle? collider, Vector2 position)
             : this(texture, collider, position, 1f, 0f) { }
-
-        public virtual void Update(GameTime gameTime)
-        {
-            
-        }
 
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {

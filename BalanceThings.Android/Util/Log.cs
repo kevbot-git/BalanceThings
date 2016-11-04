@@ -14,7 +14,7 @@ namespace BalanceThings.Util
         internal static void D(string message)
         {
             DateTime now = DateTime.Now;
-            Android.Util.Log.Debug(TAG, message + "(Time: " + now.Hour + "h" + now.Minute + "m" + now.Second + "s" + now.Millisecond + "ms)");
+            Android.Util.Log.Debug(TAG, message + " (Time: " + now.Hour + "h" + now.Minute + "m" + now.Second + "s" + now.Millisecond + "ms)");
         }
 
         internal static void V(string message)

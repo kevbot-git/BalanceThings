@@ -37,7 +37,7 @@ namespace BalanceThings.Core
             _sensorManager = (SensorManager) GetSystemService(SensorService);
             _lastAccelerometerValue = new Microsoft.Xna.Framework.Vector3();
             Game g = new SinglePlayerGame(GetAccelerometerValues);
-            SetContentView((View) g.Services.GetService(typeof(View)));
+            SetContentView((Android.Views.View) g.Services.GetService(typeof(Android.Views.View)));
             g.Run();
         }
 

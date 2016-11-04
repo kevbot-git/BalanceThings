@@ -27,7 +27,6 @@ namespace BalanceThings.Physics
         {
             _sprite.Position = ConvertUnits.ToDisplayUnits(_body.Position);
             _sprite.Rotation = _body.Rotation;
-            _sprite.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -35,9 +34,7 @@ namespace BalanceThings.Physics
             _sprite.Draw(gameTime, spriteBatch);
         }
 
-        internal Body Body
-        {
-            get { return _body; }
-        }
+        internal Body Body { get { return _body; } set { _body = value; } }
+        internal Sprite Sprite { get { return _sprite; } }
     }
 }

@@ -10,11 +10,12 @@ namespace BalanceThings.Items
     class Hand : GameObject
     {
         internal Hand(World world, ContentManager contentManager, Vector2 position)
-            : base(world, new Sprite(contentManager.Load<Texture2D>("hand_default"), new Rectangle(6, 1, 2, 6), position, 16f, 0f), 1f)
+            : base(world, new Sprite(contentManager.Load<Texture2D>("hand_default"), new Rectangle(6, 1, 2, 6), position, 1f, 0f), 1f)
         {
-            Body.IsStatic = true;
+            Body.BodyType = BodyType.Static;
+            Body.IsKinematic = true;
+            Body.Restitution = 0.0f;
+            Body.Friction = 1f;
         }
-
-
     }
 }

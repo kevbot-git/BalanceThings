@@ -1,4 +1,5 @@
 using BalanceThings.Util;
+using BalanceThings.View;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -66,6 +67,7 @@ namespace BalanceThings.Core
         protected sealed override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            Camera = null;
 
             preLoad();
 
@@ -74,7 +76,6 @@ namespace BalanceThings.Core
             // Begin loading:
             _loadingThread = new Thread(new ThreadStart(_contentManager.LoadAll) + OnLoaded);
             _loadingThread.Start();
-            Log.D("Finished native LoadContent() method.");
         }
 
         protected virtual void OnLoaded()
@@ -89,6 +90,7 @@ namespace BalanceThings.Core
 
         private void drawLoadingBar(int nChunks)
         {
+            float scale = 4f;
             Vector2 center = GraphicsDevice.Viewport.Bounds.Center.ToVector2();
 
             for (int i = 0; i < nChunks; i++)
@@ -108,10 +110,10 @@ namespace BalanceThings.Core
                         texture = _loaderEmpty;
                 }
 
-                Vector2 position = center + new Vector2(-nChunks * texture.Width * GlobalScale / 2 + i * texture.Width * GlobalScale, 0);
+                Vector2 position = center + new Vector2(-nChunks * texture.Width * scale / 2 + i * texture.Width * scale, 0);
 
                 spriteBatch.Draw(texture, position , null, Color.White,
-                    0f, Vector2.Zero, GlobalScale, SpriteEffects.None, 0f);
+                    0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
             }
         }
 
@@ -125,25 +127,22 @@ namespace BalanceThings.Core
         
         protected override void Draw(GameTime gameTime)
         {
-            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, null, null, null, null);
+            
 
             switch (_currentGameState)
             {
                 case GameState.LOADING:
-
+                    spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, null, null, null, null);
                     drawLoadingBar(10);
-
+                    spriteBatch.End();
                     break;
 
             }
-
-            spriteBatch.End();
-
             base.Draw(gameTime);
         }
 
         protected Color Background { set; get; }
 
-        protected float GlobalScale { get { return 8f; } } //
+        protected Camera Camera { get; set; }
     }
 }
