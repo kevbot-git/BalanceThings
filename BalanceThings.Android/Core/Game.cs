@@ -40,19 +40,22 @@ namespace BalanceThings.Core
         }
 
         // Used to reset game objects' postions etc.
-        protected virtual void Restart()
+        protected void Restart()
         {
-            Init();
+            Start();
         }
 
-        protected abstract void Init();
+        protected virtual void Start()
+        {
+            _currentGameState = GameState.PLAYING;
+        }
+
         protected abstract ContentManager Load();
         
         protected sealed override void Initialize()
         {
             Background = Color.White;
 
-            Init();
             base.Initialize();
         }
 
@@ -74,13 +77,8 @@ namespace BalanceThings.Core
             _contentManager = Load();
 
             // Begin loading:
-            _loadingThread = new Thread(new ThreadStart(_contentManager.LoadAll) + OnLoaded);
+            _loadingThread = new Thread(new ThreadStart(_contentManager.LoadAll) + Start);
             _loadingThread.Start();
-        }
-
-        protected virtual void OnLoaded()
-        {
-            _currentGameState = GameState.PLAYING;
         }
 
         protected override void UnloadContent()
@@ -120,15 +118,13 @@ namespace BalanceThings.Core
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                Exit();
+                _currentGameState = ((_currentGameState == GameState.PAUSED) ? GameState.PLAYING : GameState.PAUSED);
 
             base.Update(gameTime);
         }
         
         protected override void Draw(GameTime gameTime)
         {
-            
-
             switch (_currentGameState)
             {
                 case GameState.LOADING:

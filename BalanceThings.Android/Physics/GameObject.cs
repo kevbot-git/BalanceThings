@@ -36,5 +36,14 @@ namespace BalanceThings.Physics
 
         internal Body Body { get { return _body; } set { _body = value; } }
         internal Sprite Sprite { get { return _sprite; } }
+        internal Vector2 Position
+        {
+            get { return _sprite.Position; }
+            set
+            {
+                _sprite.Position = value;
+                _body.Position = ConvertUnits.ToSimUnits(value);
+            }
+        }
     }
 }
