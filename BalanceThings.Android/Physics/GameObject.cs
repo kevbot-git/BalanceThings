@@ -13,14 +13,14 @@ namespace BalanceThings.Physics
         private Body _body;
         private Sprite _sprite;
 
-        internal GameObject(World world, Body body, Sprite sprite)
+        internal GameObject(Body body, Sprite sprite)
         {
             _body = body;
             _sprite = sprite;
         }
 
         internal GameObject(World world, Sprite sprite, float density)
-            : this(world, BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(sprite.Collider.Width),
+            : this(BodyFactory.CreateRectangle(world, ConvertUnits.ToSimUnits(sprite.Collider.Width),
                 ConvertUnits.ToSimUnits(sprite.Collider.Height), density, ConvertUnits.ToSimUnits(sprite.Position)), sprite) { }
 
         public void Update(GameTime gameTime)

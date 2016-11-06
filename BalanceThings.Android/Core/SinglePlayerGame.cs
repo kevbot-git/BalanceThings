@@ -63,6 +63,10 @@ namespace BalanceThings.Core
             _baseballBat.Body.AngularVelocity = 0f;
             _baseballBat.Body.Rotation = 0f;
 
+            int choice = (new Random().Next(0, 2));
+            Log.D("Picked: " + choice);
+            _hand.Position = new Vector2((choice - 0.5f), 26f);
+
             Camera.Position = Vector2.Zero;
             Camera.Zoom = 1f;
 

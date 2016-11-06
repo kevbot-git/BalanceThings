@@ -20,7 +20,7 @@ namespace BalanceThings.Items
         {
             Body.BodyType = BodyType.Dynamic;
             Body.Friction = 1f;
-            Body.Restitution = 0.4f;
+            Body.Restitution = 0.2f;
             Body.AngularDamping = 0f;
         }
 
