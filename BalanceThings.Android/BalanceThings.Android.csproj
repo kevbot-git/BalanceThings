@@ -106,6 +106,16 @@
   <ItemGroup>
     <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\fx\effect_greyscale.fx" />
+    <Content Include="Content\fx\effect_blackout.fx" />
+    <Content Include="Content\img\baseball_bat.png" />
+    <Content Include="Content\img\hand_default.png" />
+    <Content Include="Content\img\load_chunk_empty.png" />
+    <Content Include="Content\img\load_chunk_full.png" />
+    <Content Include="Content\img\load_chunk_left.png" />
+    <Content Include="Content\img\load_chunk_right.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
