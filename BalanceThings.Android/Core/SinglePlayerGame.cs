@@ -78,15 +78,14 @@ namespace BalanceThings.Core
                         if (touch.Value.GestureType == GestureType.Tap)
                             _baseballBat.Body.LinearVelocity = new Vector2(0f, -5f);
                         else if (touch.Value.GestureType == GestureType.FreeDrag)
-                            _hand.Position = new Vector2(touch.Value.Position.X / 12 - 32, _hand.Sprite.Position.Y);
+                            _hand.Position = new Vector2(touch.Value.Position.X / SCALED_ZOOM - _hand.Sprite.Texture.Width, _hand.Sprite.Position.Y);
                     }
 
                     if (_baseballBat.Position.Y > 128 && Camera.Zoom < 3f)
                     {
-                        Camera.Position = (Camera.Position * 15 + _hand.Position) / 16f;
-                        Camera.Zoom = 2f - (1f / Math.Abs((Camera.Position.X + Camera.Position.Y) / 2f));
-                        if (Camera.Zoom > 2f || Camera.Zoom < 1f)
-                            Log.D("Zoom got to " + Camera.Zoom);
+                        Camera.Position = (Camera.Position * 20 + _hand.Position) / new Vector2(21, 21);
+                        float animProgress = 1f / ((Math.Abs(Camera.Position.X) + Math.Abs(Camera.Position.Y)) / 2f);
+                        Camera.Zoom = 2f - animProgress;
                     }
                     if (_baseballBat.Position.Y > 480f)
                         Restart();
