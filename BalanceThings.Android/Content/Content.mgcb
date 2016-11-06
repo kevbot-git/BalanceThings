@@ -85,3 +85,9 @@
 /processorParam:TextureFormat=Color
 /build:baseball_bat.png
 
+#begin fx/effect_blackout.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:fx/effect_blackout.fx
+

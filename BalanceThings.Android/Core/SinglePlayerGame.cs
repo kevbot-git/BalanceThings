@@ -7,12 +7,15 @@ using BalanceThings.Drawing;
 using BalanceThings.Items;
 using FarseerPhysics;
 using Microsoft.Xna.Framework.Input.Touch;
+using System;
 
 namespace BalanceThings.Core
 {
     class SinglePlayerGame : Game
     {
         private World _world;
+
+        private Effect _effectBlackout;
 
         private GameObject _hand;
         private GameObject _baseballBat;
@@ -25,13 +28,10 @@ namespace BalanceThings.Core
         {
             ContentManager c = new ContentManager();
 
-            for (int i = 1; i <= 10; i++)
+            c.AddTask(new LoadTask("effects", delegate ()
             {
-                c.AddTask(new LoadTask("test" + i, delegate ()
-                {
-                    System.Threading.Thread.Sleep(100);
-                }));
-            }
+                _effectBlackout = Content.Load<Effect>("fx/effect_blackout");
+            }));
 
             c.AddTask(new LoadTask("physics", delegate ()
             {
@@ -43,7 +43,7 @@ namespace BalanceThings.Core
                 _hand = new Hand(_world, Content, new Vector2(0, 26));
                 _baseballBat = new BaseballBat(_world, Content, new Vector2(0, -24));
 
-                Camera = new View.Camera(GraphicsDevice, 12f, new Vector2(0, 0));
+                Camera = new View.Camera(this, new Vector2(0, 0), 1f);
             }));
 
             return c;
@@ -51,15 +51,13 @@ namespace BalanceThings.Core
 
         protected override void Start()
         {
-            Log.D("Loaded, calling init");
-
             _baseballBat.Position = new Vector2(0, -24);
             _baseballBat.Body.LinearVelocity = Vector2.Zero;
             _baseballBat.Body.AngularVelocity = 0f;
             _baseballBat.Body.Rotation = 0f;
 
             Camera.Position = Vector2.Zero;
-            Camera.Zoom = 12f;
+            Camera.Zoom = 1f;
 
             base.Start();
         }
@@ -83,12 +81,13 @@ namespace BalanceThings.Core
                             _hand.Position = new Vector2(touch.Value.Position.X / 12 - 32, _hand.Sprite.Position.Y);
                     }
 
-                    if (_baseballBat.Position.Y > 128)
+                    if (_baseballBat.Position.Y > 128 && Camera.Zoom < 3f)
                     {
-                        Camera.Position = new Vector2(_baseballBat.Position.X * 0.5f, _baseballBat.Position.Y);
-                        Camera.Zoom *= (1f + (_baseballBat.Position.X - 128f) / 20000f);
+                        Camera.Position = (Camera.Position * 15 + _hand.Position) / 16f;
+                        Camera.Zoom = 2f - (1f / Math.Abs((Camera.Position.X + Camera.Position.Y) / 2f));
+                        if (Camera.Zoom > 2f || Camera.Zoom < 1f)
+                            Log.D("Zoom got to " + Camera.Zoom);
                     }
-                    
                     if (_baseballBat.Position.Y > 480f)
                         Restart();
 

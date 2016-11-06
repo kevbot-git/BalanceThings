@@ -9,6 +9,8 @@ namespace BalanceThings.Core
 {
     internal abstract class Game : Microsoft.Xna.Framework.Game
     {
+        internal float SCALED_ZOOM;
+
         protected GraphicsDeviceManager graphics;
         protected SpriteBatch spriteBatch;
 
@@ -70,6 +72,9 @@ namespace BalanceThings.Core
         protected sealed override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            SCALED_ZOOM = GraphicsDevice.Viewport.Width / 60f;
+
             Camera = null;
 
             preLoad();
