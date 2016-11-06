@@ -16,7 +16,7 @@ namespace BalanceThings.Items
     class BaseballBat : GameObject
     {
         internal BaseballBat(World world, ContentManager contentManager, Vector2 position)
-            : base(world, new Sprite(contentManager.Load<Texture2D>("baseball_bat"), new Rectangle(5, 0, 6, 64), position, 1f, 0f), 1f)
+            : base(world, new Sprite(contentManager.Load<Texture2D>("img/baseball_bat"), new Rectangle(5, 0, 6, 64), position, 1f, 0f), 1f)
         {
             Body.BodyType = BodyType.Dynamic;
             Body.Friction = 1f;

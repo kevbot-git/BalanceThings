@@ -16,9 +16,13 @@ namespace BalanceThings.Core
         private World _world;
 
         private Effect _effectBlackout;
+        private Effect _effectGreyscale;
 
         private GameObject _hand;
         private GameObject _baseballBat;
+
+        private bool _isFailing;
+        private double _lastFail;
 
         public SinglePlayerGame(AccelerometerHandlerDelegate accelerometerHandler)
             : base(accelerometerHandler) { }
@@ -31,6 +35,7 @@ namespace BalanceThings.Core
             c.AddTask(new LoadTask("effects", delegate ()
             {
                 _effectBlackout = Content.Load<Effect>("fx/effect_blackout");
+                _effectGreyscale = Content.Load<Effect>("fx/effect_greyscale");
             }));
 
             c.AddTask(new LoadTask("physics", delegate ()
@@ -51,6 +56,8 @@ namespace BalanceThings.Core
 
         protected override void Start()
         {
+            GlobalEffect = null;
+
             _baseballBat.Position = new Vector2(0, -24);
             _baseballBat.Body.LinearVelocity = Vector2.Zero;
             _baseballBat.Body.AngularVelocity = 0f;
@@ -58,6 +65,8 @@ namespace BalanceThings.Core
 
             Camera.Position = Vector2.Zero;
             Camera.Zoom = 1f;
+
+            _isFailing = false;
 
             base.Start();
         }
@@ -81,14 +90,21 @@ namespace BalanceThings.Core
                             _hand.Position = new Vector2(touch.Value.Position.X / SCALED_ZOOM - _hand.Sprite.Texture.Width, _hand.Sprite.Position.Y);
                     }
 
-                    if (_baseballBat.Position.Y > 128 && Camera.Zoom < 3f)
+                    if (_baseballBat.Position.Y > 128)
                     {
-                        Camera.Position = (Camera.Position * 20 + _hand.Position) / new Vector2(21, 21);
-                        float animProgress = 1f / ((Math.Abs(Camera.Position.X) + Math.Abs(Camera.Position.Y)) / 2f);
-                        Camera.Zoom = 2f - animProgress;
+                        double failTime = 2.0;
+
+                        if (!_isFailing)
+                        {
+                            _lastFail = gameTime.TotalGameTime.TotalSeconds;
+                            failTime = 2;
+                            _isFailing = true;
+                        }
+                        if (gameTime.TotalGameTime.TotalSeconds - _lastFail < failTime)
+                            animateFail();
+                        else
+                            Restart();
                     }
-                    if (_baseballBat.Position.Y > 480f)
-                        Restart();
 
                     _hand.Update(gameTime);
 
@@ -98,6 +114,14 @@ namespace BalanceThings.Core
             }
 
             base.Update(gameTime);
+        }
+
+        private void animateFail()
+        {
+            Camera.Position = (Camera.Position * 20 + _hand.Position) / new Vector2(21, 21);
+            float animProgress = 1f / ((Math.Abs(Camera.Position.X) + Math.Abs(Camera.Position.Y) + 1f) / 2f);
+            Camera.Zoom = 2f - animProgress;
+            GlobalEffect = _effectGreyscale;
         }
 
         protected override void Draw(GameTime gameTime)
@@ -112,7 +136,8 @@ namespace BalanceThings.Core
                     if (Camera != null)
                         transform = Camera.Transform;
 
-                    spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap, null, null, null, transform);
+                    spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap,
+                        null, null, GlobalEffect, transform);
 
                     _hand.Draw(gameTime, spriteBatch);
                     _baseballBat.Draw(gameTime, spriteBatch);

@@ -56,17 +56,15 @@ namespace BalanceThings.Core
         
         protected sealed override void Initialize()
         {
-            Background = Color.White;
-
             base.Initialize();
         }
 
         private void preLoad()
         {
-            _loaderLeft = Content.Load<Texture2D>("load_chunk_left");
-            _loaderRight = Content.Load<Texture2D>("load_chunk_right");
-            _loaderEmpty = Content.Load<Texture2D>("load_chunk_empty");
-            _loaderFull = Content.Load<Texture2D>("load_chunk_full");
+            _loaderLeft = Content.Load<Texture2D>("img/load_chunk_left");
+            _loaderRight = Content.Load<Texture2D>("img/load_chunk_right");
+            _loaderEmpty = Content.Load<Texture2D>("img/load_chunk_empty");
+            _loaderFull = Content.Load<Texture2D>("img/load_chunk_full");
         }
 
         protected sealed override void LoadContent()
@@ -75,6 +73,8 @@ namespace BalanceThings.Core
 
             SCALED_ZOOM = GraphicsDevice.Viewport.Width / 60f;
 
+            Background = Color.White;
+            GlobalEffect = null;
             Camera = null;
 
             preLoad();
@@ -143,7 +143,7 @@ namespace BalanceThings.Core
         }
 
         protected Color Background { set; get; }
-
         protected Camera Camera { get; set; }
+        protected Effect GlobalEffect { get; set; }
     }
 }
