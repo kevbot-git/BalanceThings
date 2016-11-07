@@ -21,8 +21,8 @@ namespace BalanceThings.Core
         private GameObject _hand;
         private GameObject _baseballBat;
 
-        private bool _isFailing;
         private double _lastFail;
+        private int _failTime;
 
         public SinglePlayerGame(AccelerometerHandlerDelegate accelerometerHandler)
             : base(accelerometerHandler) { }
@@ -70,48 +70,54 @@ namespace BalanceThings.Core
             Camera.Position = Vector2.Zero;
             Camera.Zoom = 1f;
 
-            _isFailing = false;
+            _failTime = 2;
 
             base.Start();
         }
 
         protected override void Update(GameTime gameTime)
         {
-            GestureSample? touch = null;
             if (TouchPanel.IsGestureAvailable)
-                touch = TouchPanel.ReadGesture();
+            {
+                GestureSample touch = TouchPanel.ReadGesture();
+
+                if (touch.GestureType == GestureType.Tap)
+                {
+                    if (_currentGameState == GameState.PLAYING)
+                        _baseballBat.Body.LinearVelocity = new Vector2(0f, -5f);
+                    else if (_currentGameState == GameState.FAILING)
+                        Restart();
+                }
+                else if (touch.GestureType == GestureType.FreeDrag)
+                    _hand.Position = new Vector2(touch.Position.X / SCALED_ZOOM - _hand.Sprite.Texture.Width,
+                        _hand.Sprite.Position.Y);
+            }
 
             switch (_currentGameState)
             {
+                case GameState.FAILING:
                 case GameState.PLAYING:
                     _world.Step((float) 1 / 60);
 
-                    if (touch != null)
-                    {
-                        if (touch.Value.GestureType == GestureType.Tap)
-                            _baseballBat.Body.LinearVelocity = new Vector2(0f, -5f);
-                        else if (touch.Value.GestureType == GestureType.FreeDrag)
-                            _hand.Position = new Vector2(touch.Value.Position.X / SCALED_ZOOM - _hand.Sprite.Texture.Width, _hand.Sprite.Position.Y);
-                    }
-
                     if (_baseballBat.Position.Y > 128)
                     {
-                        double failTime = 2.0;
-
-                        if (!_isFailing)
+                        if (_currentGameState != GameState.FAILING)
                         {
                             _lastFail = gameTime.TotalGameTime.TotalSeconds;
-                            failTime = 2;
-                            _isFailing = true;
+                            _failTime = 2; //////////////////////////////////// Change
+                            _currentGameState = GameState.FAILING;
                         }
-                        if (gameTime.TotalGameTime.TotalSeconds - _lastFail < failTime)
+                    }
+
+                    if (_currentGameState == GameState.FAILING)
+                    {
+                        if (gameTime.TotalGameTime.TotalSeconds - _lastFail < _failTime)
                             animateFail();
                         else
                             Restart();
                     }
 
                     _hand.Update(gameTime);
-
                     _baseballBat.Update(gameTime);
 
                     break;
@@ -134,6 +140,8 @@ namespace BalanceThings.Core
 
             switch (_currentGameState)
             {
+                case GameState.PAUSED:
+                case GameState.FAILING:
                 case GameState.PLAYING:
 
                     Matrix? transform = null;

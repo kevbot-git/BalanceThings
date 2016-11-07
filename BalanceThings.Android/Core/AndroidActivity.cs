@@ -4,6 +4,7 @@ using Android.Hardware;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
+using BalanceThings.Util;
 
 namespace BalanceThings.Core
 {
@@ -36,14 +37,30 @@ namespace BalanceThings.Core
             base.OnCreate(bundle);
             _sensorManager = (SensorManager) GetSystemService(SensorService);
             _lastAccelerometerValue = new Microsoft.Xna.Framework.Vector3();
+            Window.AddFlags(WindowManagerFlags.KeepScreenOn | WindowManagerFlags.Fullscreen);
             Game g = new SinglePlayerGame(GetAccelerometerValues);
+            g.GamePause = onGamePause;
+            g.GameResume = onGameResume;
             SetContentView((Android.Views.View) g.Services.GetService(typeof(Android.Views.View)));
             g.Run();
+        }
+
+        private void onGamePause()
+        {
+            setImmersive(false);
+            Log.D("Success! Paused");
+        }
+
+        private void onGameResume()
+        {
+            setImmersive(true);
+            Log.D("Success! Resumed");
         }
 
         protected override void OnResume()
         {
             base.OnResume();
+            setImmersive(true);
             _sensorManager.RegisterListener(this, _sensorManager.GetDefaultSensor(SensorType.Accelerometer), SensorDelay.Game);
         }
 
@@ -51,6 +68,16 @@ namespace BalanceThings.Core
         {
             base.OnPause();
             _sensorManager.UnregisterListener(this);
+        }
+
+        private void setImmersive(bool isImmersive)
+        {
+            if (isImmersive)
+                Window.DecorView.SystemUiVisibility |= (StatusBarVisibility)((int)StatusBarVisibility.Hidden |
+                    (int)SystemUiFlags.Immersive | (int)SystemUiFlags.HideNavigation);
+            else
+                Window.DecorView.SystemUiVisibility &= ~(StatusBarVisibility)((int)StatusBarVisibility.Hidden |
+                    (int)SystemUiFlags.Immersive | (int)SystemUiFlags.HideNavigation);
         }
 
         private Microsoft.Xna.Framework.Vector3 GetAccelerometerValues()

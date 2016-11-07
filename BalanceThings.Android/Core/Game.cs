@@ -14,11 +14,16 @@ namespace BalanceThings.Core
         protected GraphicsDeviceManager graphics;
         protected SpriteBatch spriteBatch;
 
+        internal delegate void OnGamePause();
+        internal delegate void OnGameResume();
         // Delegate handler for accelerometer sensor
         internal delegate Vector3 AccelerometerHandlerDelegate();
 
-        // Handler for aboce delegate method
+        // Handler for above delegate method
         protected AccelerometerHandlerDelegate GetAccelerometerVector;
+
+        protected OnGamePause _onGamePause;
+        protected OnGameResume _onGameResume;
         protected GameState _currentGameState;
 
         private ContentManager _contentManager;
@@ -37,6 +42,8 @@ namespace BalanceThings.Core
             graphics.SupportedOrientations = DisplayOrientation.Portrait;
 
             GetAccelerometerVector = accelerometerHandler;
+            _onGamePause = null;
+            _onGameResume = null;
 
             _currentGameState = GameState.LOADING;
         }
@@ -45,6 +52,20 @@ namespace BalanceThings.Core
         protected void Restart()
         {
             Start();
+        }
+
+        protected virtual void Pause()
+        {
+            _currentGameState = GameState.PAUSED;
+            // If _onGamePause is set, run it
+            _onGamePause?.Invoke();
+        }
+
+        protected virtual void Resume()
+        {
+            _currentGameState = GameState.PLAYING;
+            // If _onGameResume is set, run it
+            _onGameResume?.Invoke();
         }
 
         protected virtual void Start()
@@ -123,7 +144,13 @@ namespace BalanceThings.Core
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                _currentGameState = ((_currentGameState == GameState.PAUSED) ? GameState.PLAYING : GameState.PAUSED);
+            {
+                if (_currentGameState == GameState.PAUSED)
+                    Resume();
+                else if (_currentGameState == GameState.PLAYING || _currentGameState == GameState.FAILING)
+                    Pause();
+            }
+                
 
             base.Update(gameTime);
         }
@@ -140,6 +167,18 @@ namespace BalanceThings.Core
 
             }
             base.Draw(gameTime);
+        }
+
+        internal OnGamePause GamePause
+        {
+            get { return _onGamePause; }
+            set { _onGamePause = value; }
+        }
+
+        internal OnGameResume GameResume
+        {
+            get { return _onGameResume; }
+            set { _onGameResume = value; }
         }
 
         protected Color Background { set; get; }

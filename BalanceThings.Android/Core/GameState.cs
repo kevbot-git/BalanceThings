@@ -2,6 +2,6 @@ namespace BalanceThings.Core
 {
     internal enum GameState
     {
-        LOADING, IN_MAIN_MENU, PLAYING, PAUSED
+        LOADING, IN_MAIN_MENU, PLAYING, FAILING, PAUSED
     }
 }
