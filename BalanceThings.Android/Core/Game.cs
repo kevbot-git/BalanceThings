@@ -55,14 +55,14 @@ namespace BalanceThings.Core
             Start();
         }
 
-        protected virtual void Pause(GameTime gameTime)
+        protected virtual void Pause()
         {
             _currentGameState = GameState.PAUSED;
             // If _onGamePause is set, run it
             _onGamePause?.Invoke();
         }
 
-        protected virtual void Resume(GameTime gameTime)
+        protected virtual void Resume()
         {
             _currentGameState = GameState.PLAYING;
             // If _onGameResume is set, run it
@@ -147,9 +147,9 @@ namespace BalanceThings.Core
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
             {
                 if (_currentGameState == GameState.PAUSED)
-                    Resume(gameTime);
+                    Resume();
                 else if (_currentGameState == GameState.PLAYING || _currentGameState == GameState.FAILING)
-                    Pause(gameTime);
+                    Pause();
             }
             
 

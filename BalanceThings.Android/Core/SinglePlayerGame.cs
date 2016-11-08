@@ -13,8 +13,6 @@ namespace BalanceThings.Core
 {
     class SinglePlayerGame : Game
     {
-        private static readonly float WORLD_UPDATE_RATE = (1f / 60f);
-
         private World _world;
 
         private Effect _effectBlackout;
@@ -78,14 +76,14 @@ namespace BalanceThings.Core
             base.Start();
         }
 
-        protected override void Pause(GameTime gameTime)
+        protected override void Pause()
         {
-            base.Pause(gameTime);
+            base.Pause();
         }
 
-        protected override void Resume(GameTime gameTime)
+        protected override void Resume()
         {
-            base.Resume(gameTime);
+            base.Resume();
         }
 
         private void Fail(GameTime gameTime)
@@ -116,7 +114,7 @@ namespace BalanceThings.Core
 
             if (_currentGameState == GameState.PLAYING)
             {
-                _world.Step(WORLD_UPDATE_RATE);
+                _world.Step(1f / 60f);
 
                 if (_baseballBat.Position.Y > 128)
                     Fail(gameTime);
