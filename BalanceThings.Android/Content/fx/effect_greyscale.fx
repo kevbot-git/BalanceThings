@@ -14,7 +14,7 @@ float4 PixelShaderFunction(float2 coords: TEXCOORD0) : COLOR0
 {
 	float4 color = tex2D(s0, coords);
 	float average = (color.r + color.g + color.b) / 3;
-	float _lightness = lightness;
+	float _lightness = abs(lightness);
 	if (_lightness > 1) _lightness = 1;
 	if (_lightness < 0) _lightness = 0;
 	color.rgb = pow(average, (1 - _lightness));

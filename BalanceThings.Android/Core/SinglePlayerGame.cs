@@ -130,7 +130,8 @@ namespace BalanceThings.Core
                     Restart();
             }
 
-            if (_currentGameState == GameState.PLAYING || _currentGameState == GameState.FAILING)
+            if (_currentGameState == GameState.PLAYING || _currentGameState == GameState.FAILING ||
+                _currentGameState == GameState.PAUSED)
             {
                 _hand.Update(gameTime);
                 _baseballBat.Update(gameTime);

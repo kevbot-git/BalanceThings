@@ -151,7 +151,7 @@ namespace BalanceThings.Core
                 else if (_currentGameState == GameState.PLAYING || _currentGameState == GameState.FAILING)
                     Pause(gameTime);
             }
-                
+            
 
             base.Update(gameTime);
         }
