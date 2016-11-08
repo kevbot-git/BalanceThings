@@ -36,6 +36,7 @@ namespace BalanceThings.Core
             {
                 _effectBlackout = Content.Load<Effect>("fx/effect_blackout");
                 _effectGreyscale = Content.Load<Effect>("fx/effect_greyscale");
+                _effectGreyscale.Parameters["lightness"].SetValue(0f);
             }));
 
             c.AddTask(new LoadTask("physics", delegate ()
@@ -63,9 +64,9 @@ namespace BalanceThings.Core
             _baseballBat.Body.AngularVelocity = 0f;
             _baseballBat.Body.Rotation = 0f;
 
-            int choice = (new Random().Next(0, 2));
+            float choice = new Random().Next(0, 2);
             Log.D("Picked: " + choice);
-            _hand.Position = new Vector2((choice - 0.5f), 26f);
+            _hand.Position = new Vector2(choice - 0.5f, 26f);
 
             Camera.Position = Vector2.Zero;
             Camera.Zoom = 1f;
@@ -73,6 +74,24 @@ namespace BalanceThings.Core
             _failTime = 2;
 
             base.Start();
+        }
+
+        protected override void Pause()
+        {
+            base.Pause();
+        }
+
+        protected override void Resume()
+        {
+            base.Resume();
+        }
+
+        private void Fail(GameTime gameTime)
+        {
+            _currentGameState = GameState.FAILING;
+            _lastFail = gameTime.TotalGameTime.TotalSeconds;
+            _failTime = 2; //////////////////////////////////// Change
+            GlobalEffect = _effectGreyscale;
         }
 
         protected override void Update(GameTime gameTime)
@@ -84,43 +103,35 @@ namespace BalanceThings.Core
                 if (touch.GestureType == GestureType.Tap)
                 {
                     if (_currentGameState == GameState.PLAYING)
-                        _baseballBat.Body.LinearVelocity = new Vector2(0f, -5f);
+                         _baseballBat.Body.LinearVelocity = new Vector2(0f, -5f);
                     else if (_currentGameState == GameState.FAILING)
                         Restart();
                 }
-                else if (touch.GestureType == GestureType.FreeDrag)
+                else if (touch.GestureType == GestureType.FreeDrag && _currentGameState == GameState.PLAYING)
                     _hand.Position = new Vector2(touch.Position.X / SCALED_ZOOM - _hand.Sprite.Texture.Width,
                         _hand.Sprite.Position.Y);
             }
 
-            switch (_currentGameState)
+            if (_currentGameState == GameState.PLAYING)
             {
-                case GameState.FAILING:
-                case GameState.PLAYING:
-                    _world.Step((float) 1 / 60);
+                _world.Step(1f / 60f);
 
-                    if (_baseballBat.Position.Y > 128)
-                    {
-                        if (_currentGameState != GameState.FAILING)
-                        {
-                            _lastFail = gameTime.TotalGameTime.TotalSeconds;
-                            _failTime = 2; //////////////////////////////////// Change
-                            _currentGameState = GameState.FAILING;
-                        }
-                    }
+                if (_baseballBat.Position.Y > 128)
+                    Fail(gameTime);
+            }
 
-                    if (_currentGameState == GameState.FAILING)
-                    {
-                        if (gameTime.TotalGameTime.TotalSeconds - _lastFail < _failTime)
-                            animateFail();
-                        else
-                            Restart();
-                    }
+            if (_currentGameState == GameState.FAILING)
+            {
+                if (gameTime.TotalGameTime.TotalSeconds - _lastFail < _failTime)
+                    animateFail();
+                else
+                    Restart();
+            }
 
-                    _hand.Update(gameTime);
-                    _baseballBat.Update(gameTime);
-
-                    break;
+            if (_currentGameState == GameState.PLAYING || _currentGameState == GameState.FAILING)
+            {
+                _hand.Update(gameTime);
+                _baseballBat.Update(gameTime);
             }
 
             base.Update(gameTime);
@@ -131,7 +142,6 @@ namespace BalanceThings.Core
             Camera.Position = (Camera.Position * 20 + _hand.Position) / new Vector2(21, 21);
             float animProgress = 1f / ((Math.Abs(Camera.Position.X) + Math.Abs(Camera.Position.Y) + 1f) / 2f);
             Camera.Zoom = 2f - animProgress;
-            GlobalEffect = _effectGreyscale;
         }
 
         protected override void Draw(GameTime gameTime)
@@ -148,8 +158,18 @@ namespace BalanceThings.Core
                     if (Camera != null)
                         transform = Camera.Transform;
 
+                    Effect effect;
+
+                    if (_currentGameState == GameState.PAUSED)
+                    {
+                        effect = _effectGreyscale.Clone();
+                        effect.Parameters["lightness"].SetValue(0.9f);
+                    }
+                    else
+                        effect = GlobalEffect;
+
                     spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointWrap,
-                        null, null, GlobalEffect, transform);
+                        null, null, effect, transform);
 
                     _hand.Draw(gameTime, spriteBatch);
                     _baseballBat.Draw(gameTime, spriteBatch);

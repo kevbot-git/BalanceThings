@@ -29,6 +29,7 @@ namespace BalanceThings.Core
         private ContentManager _contentManager;
         private Thread _loadingThread;
 
+        private Effect _globalEffect;
         private Texture2D _loaderLeft, _loaderRight, _loaderEmpty, _loaderFull;
 
         internal Game(AccelerometerHandlerDelegate accelerometerHandler)
@@ -183,6 +184,17 @@ namespace BalanceThings.Core
 
         protected Color Background { set; get; }
         protected Camera Camera { get; set; }
-        protected Effect GlobalEffect { get; set; }
+
+        protected Effect GlobalEffect
+        {
+            get { return _globalEffect; }
+            set
+            {
+                if (value == null)
+                    _globalEffect = null;
+                else
+                    _globalEffect = value.Clone();
+            }
+        }
     }
 }
