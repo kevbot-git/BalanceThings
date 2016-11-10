@@ -8,6 +8,8 @@ namespace BalanceThings.View
 {
     internal class Camera
     {
+        private static float DEFAULT_EASE = 10f;
+
         private Matrix _transformMatrix;
         private Viewport _viewport;
         private Vector2 _position;
@@ -35,6 +37,23 @@ namespace BalanceThings.View
                 Matrix.CreateTranslation(new Vector3(position.X, position.Y, 0));
         }
 
+        internal void EaseTo(float zoom, Vector2 position, float rate)
+        {
+            rate = (Math.Abs(rate) > 1f) ? Math.Abs(rate): 1.001f;
+            Zoom += (zoom - Zoom) / rate;
+            Position += ((position - Position) / new Vector2(rate, rate));
+        }
+
+        internal void EaseTo(float zoom)
+        {
+            EaseTo(zoom, Position, DEFAULT_EASE);
+        }
+
+        internal void EaseTo(Vector2 position)
+        {
+            EaseTo(Zoom, position, DEFAULT_EASE);
+        }
+
         internal void Follow(GameObject gameObject)
         {
             if (gameObject != null)
@@ -42,6 +61,13 @@ namespace BalanceThings.View
         }
 
         internal Matrix Transform { get { return _transformMatrix; } }
+
+        internal Rectangle Viewport
+        {
+            get { return new Rectangle((int) (_viewport.Bounds.X / _zoom), (int) (_viewport.Bounds.Y / _zoom),
+                (int) (_viewport.Bounds.Width / _zoom), (int) (_viewport.Bounds.Height / _zoom)); }
+        }
+
         internal float Zoom
         {
             get { return _zoom / _baseZoom; }

@@ -13,6 +13,9 @@ namespace BalanceThings.Core
 {
     class SinglePlayerGame : Game
     {
+        private static float WORLD_STEP_RATE = 1f / 60f;
+        private static float MOVE_SENSITIVITY = 0.05f;
+
         private World _world;
 
         private Effect _effectBlackout;
@@ -67,6 +70,7 @@ namespace BalanceThings.Core
             float choice = new Random().Next(0, 2);
             Log.D("Picked: " + choice);
             _hand.Position = new Vector2(choice - 0.5f, 26f);
+            _hand.Body.LinearVelocity = Vector2.Zero;
 
             Camera.Position = Vector2.Zero;
             Camera.Zoom = 1f;
@@ -100,23 +104,33 @@ namespace BalanceThings.Core
             {
                 GestureSample touch = TouchPanel.ReadGesture();
 
-                if (touch.GestureType == GestureType.Tap)
+                switch (touch.GestureType)
                 {
-                    if (_currentGameState == GameState.PLAYING)
-                         _baseballBat.Body.LinearVelocity = new Vector2(0f, -5f);
-                    else if (_currentGameState == GameState.FAILING)
-                        Restart();
+                    case GestureType.FreeDrag:
+                        if (_currentGameState == GameState.PLAYING)
+                        {
+                            if (touch.Position.Y < GraphicsDevice.Viewport.Height - 15f)
+                                _hand.Body.LinearVelocity += new Vector2((touch.Delta.X) * MOVE_SENSITIVITY, 0f);
+                            else
+                                Pause();
+                        }
+                        break;
+                    case GestureType.Tap:
+                        if (_currentGameState == GameState.FAILING)
+                            Restart();
+                        break;
+                    case GestureType.DragComplete:
+                        if(_currentGameState == GameState.PLAYING)
+                            _hand.Body.LinearVelocity = Vector2.Zero;
+                        break;
                 }
-                else if (touch.GestureType == GestureType.FreeDrag && _currentGameState == GameState.PLAYING)
-                    _hand.Position = new Vector2(touch.Position.X / SCALED_ZOOM - _hand.Sprite.Texture.Width,
-                        _hand.Sprite.Position.Y);
             }
 
             if (_currentGameState == GameState.PLAYING)
             {
-                _world.Step(1f / 60f);
+                _world.Step(WORLD_STEP_RATE);
 
-                if (_baseballBat.Position.Y > 128)
+                if (_baseballBat.Position.Y > 128 || Math.Abs(_baseballBat.Position.X) > Camera.Viewport.Width / 2 + 8)
                     Fail(gameTime);
             }
 
